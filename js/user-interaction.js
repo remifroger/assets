@@ -2,6 +2,8 @@
 
 import { multipleFiltersData } from './data-operations.js'
 
+console.log('test')
+
 const valueSelected = {}
 
 /**
