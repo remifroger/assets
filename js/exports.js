@@ -36,50 +36,54 @@ const saveFileXlsx = (data) => {
  * @returns {Promise} Retourne une promesse
  */
 const printDomElement = (target, template) => {
-    document.querySelectorAll(target).forEach((item) => {
-        if (document.getElementById('loading-modal')) {
-            $("#loading-modal").modal({
-                backdrop: "static",
-                keyboard: false,
-                show: true
-            })
-        }
-        if (item.querySelector('.footer-chart')) {
-            item.querySelector('.footer-chart').style.display = "none"
-        }
-        if (item.querySelector('.control-map .map-analyses-select')) {
-            hideChildrenFromEl(item.querySelector('.control-map .map-analyses-select'))
-        }
-        if (item.querySelector('.bloc-stat')) {
-            if (item.querySelector('.bloc-stat').querySelector("#map")) {
-                item.querySelector('.bloc-stat').insertAdjacentHTML('beforeend', "<div class='legend-print-content'></div>")
+    if ('undefined' !== typeof window.jQuery) {
+        document.querySelectorAll(target).forEach((item) => {
+            if (document.getElementById('loading-modal')) {
+                $("#loading-modal").modal({
+                    backdrop: "static",
+                    keyboard: false,
+                    show: true
+                })
             }
-            item.querySelector('.bloc-stat').insertAdjacentHTML('beforeend', "<div class='print-infos'></div>") // on ajoute un bloc juste pour l'impression, qui contiendra des informations
-        }
-        const today = new Date()
-        const optionsDate = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' } // récupération d'informations sur la date
-        if (item.querySelector('.print-infos')) {
-            const el = item.querySelector('.print-infos')
-            while (el.firstChild) el.removeChild(el.firstChild)
-            el.style.display = "block"
-            el.insertAdjacentHTML('beforeend', "<div class='mt-2'>Date d'impression : " + today.toLocaleDateString('fr-CA', optionsDate) + "</div>")
-            if (template) {
-                el.insertAdjacentHTML('beforeend', template)
+            if (item.querySelector('.footer-chart')) {
+                item.querySelector('.footer-chart').style.display = "none"
             }
-        }
-        domtoimage.toBlob(item)
-            .then(function (blob) {
-                window.saveAs(blob, 'print-' + target + '.png')
-                $("#loading-modal").modal('hide')
-                if (item.querySelector('.print-infos')) item.querySelector('.print-infos').style.display = "none"
-                if (item.querySelector('.legend-print-content')) item.querySelector('.legend-print-content').style.display = "none"
-                if (item.querySelector('.footer-chart')) item.querySelector('.footer-chart').style.display = ""
-                if (item.querySelector('.control-map .map-analyses-select')) showChildrenFromEl(item.querySelector('.control-map .map-analyses-select'))
-            })
-            .catch(function (error) {
-                console.error(error)
-            })
-    })
+            if (item.querySelector('.control-map .map-analyses-select')) {
+                hideChildrenFromEl(item.querySelector('.control-map .map-analyses-select'))
+            }
+            if (item.querySelector('.bloc-stat')) {
+                if (item.querySelector('.bloc-stat').querySelector("#map")) {
+                    item.querySelector('.bloc-stat').insertAdjacentHTML('beforeend', "<div class='legend-print-content'></div>")
+                }
+                item.querySelector('.bloc-stat').insertAdjacentHTML('beforeend', "<div class='print-infos'></div>") // on ajoute un bloc juste pour l'impression, qui contiendra des informations
+            }
+            const today = new Date()
+            const optionsDate = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' } // récupération d'informations sur la date
+            if (item.querySelector('.print-infos')) {
+                const el = item.querySelector('.print-infos')
+                while (el.firstChild) el.removeChild(el.firstChild)
+                el.style.display = "block"
+                el.insertAdjacentHTML('beforeend', "<div class='mt-2'>Date d'impression : " + today.toLocaleDateString('fr-CA', optionsDate) + "</div>")
+                if (template) {
+                    el.insertAdjacentHTML('beforeend', template)
+                }
+            }
+            domtoimage.toBlob(item)
+                .then(function (blob) {
+                    window.saveAs(blob, 'print-' + target + '.png')
+                    $("#loading-modal").modal('hide')
+                    if (item.querySelector('.print-infos')) item.querySelector('.print-infos').style.display = "none"
+                    if (item.querySelector('.legend-print-content')) item.querySelector('.legend-print-content').style.display = "none"
+                    if (item.querySelector('.footer-chart')) item.querySelector('.footer-chart').style.display = ""
+                    if (item.querySelector('.control-map .map-analyses-select')) showChildrenFromEl(item.querySelector('.control-map .map-analyses-select'))
+                })
+                .catch(function (error) {
+                    console.error(error)
+                })
+        })
+    } else {
+        console.log("jQuery est requis pour l'impression")
+    }
 }
 
 export { saveFileXlsx, printDomElement }

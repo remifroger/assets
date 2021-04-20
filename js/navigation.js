@@ -51,7 +51,12 @@ const scrollToTop = (target) => {
  * @returns {Function} Retourne l'activation de fonctionnalités Bootstrap
  */
 const bootstrapToolsActivate = () => {
-    $('[data-toggle="tooltip"]').tooltip()
+    if ('undefined' !== typeof window.jQuery) {
+        $('[data-toggle="tooltip"]').tooltip()
+    } else {
+        console.log("jQuery est requis pour activer les tooltips")
+        return
+    }
 }
 
 /**

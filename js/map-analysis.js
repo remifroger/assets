@@ -601,62 +601,67 @@ class MapAnalysis {
         const popup = new Overlay({
             element: document.getElementById('popup')
         })
-        map.addEventListener("click", (evt) => {
-            const mapClickFeature = displayFeatureInfo(evt.pixel, map, options.data.layer, options.data.geoColBasemap)
-            const codeGeoSelect = []
-            codeGeoSelect.push(mapClickFeature[0])
-            const communeName = displayFeatureInfo(evt.pixel, map, options.data.layer, 'lib_com')
-            if (communeName[0] !== undefined) {
-                $('#commune-access-modal').modal()
-                const elComName = document.querySelector('.commune-name')
-                while (elComName.firstChild) elComName.removeChild(elComName.firstChild)
-                elComName.insertAdjacentHTML('beforeend', '<b>' + communeName[0] + '</b> ?')
-                if (document.querySelector('.insee-link')) document.querySelector('.insee-link').remove()
-                const currentParams = getAllUrlParameters()
-                currentParams['territoire'] = codeGeoSelect[0]
-                currentParams['echelle'] = 'commune'
-                document.querySelector('#commune-access-modal .go').addEventListener('click', () => {
-                    window.location.href = window.location.href.split('?')[0] + '?' + Object.entries(currentParams).map(([key, val]) => `${key}=${val}`).join('&')
-                })
-            } else {
-                console.log(options.title + ' : cette fonctionnalité fonctionne seulement avec les communes et un flux contenant un champ "lib_com"')
-            }
-        })
-        map.addOverlay(popup)
-        map.addEventListener('pointermove', (evt) => {
-            let selected = null
-            if (selected !== null) {
-                selected = null
-            }
-            map.forEachFeatureAtPixel(evt.pixel, function (f) {
-                selected = f
-                return true
-            }, {
-                layerFilter: function (layer) {
-                    return layer.get('name') === options.data.layer
+        if ('undefined' !== typeof window.jQuery) {
+            map.addEventListener("click", (evt) => {
+                const mapClickFeature = displayFeatureInfo(evt.pixel, map, options.data.layer, options.data.geoColBasemap)
+                const codeGeoSelect = []
+                codeGeoSelect.push(mapClickFeature[0])
+                const communeName = displayFeatureInfo(evt.pixel, map, options.data.layer, 'lib_com')
+                if (communeName[0] !== undefined) {
+                    $('#commune-access-modal').modal()
+                    const elComName = document.querySelector('.commune-name')
+                    while (elComName.firstChild) elComName.removeChild(elComName.firstChild)
+                    elComName.insertAdjacentHTML('beforeend', '<b>' + communeName[0] + '</b> ?')
+                    if (document.querySelector('.insee-link')) document.querySelector('.insee-link').remove()
+                    const currentParams = getAllUrlParameters()
+                    currentParams['territoire'] = codeGeoSelect[0]
+                    currentParams['echelle'] = 'commune'
+                    document.querySelector('#commune-access-modal .go').addEventListener('click', () => {
+                        window.location.href = window.location.href.split('?')[0] + '?' + Object.entries(currentParams).map(([key, val]) => `${key}=${val}`).join('&')
+                    })
+                } else {
+                    console.log(options.title + ' : cette fonctionnalité fonctionne seulement avec les communes et un flux contenant un champ "lib_com"')
                 }
             })
-            const element = popup.getElement()
-            if (selected) {
-                let valMesure
-                if (multipleFiltersData(data, { [options.data.geoCol]: selected.get(options.data.geoColBasemap) }).length) {
-                    valMesure = multipleFiltersData(data, { [options.data.geoCol]: selected.get(options.data.geoColBasemap) })[0][options.mesure]
+            map.addOverlay(popup)
+            map.addEventListener('pointermove', (evt) => {
+                let selected = null
+                if (selected !== null) {
+                    selected = null
                 }
-                const coordinate = evt.coordinate
-                coordinate[1] += 50
-                $(element).popover('dispose')
-                popup.setPosition(coordinate)
-                $(element).popover({
-                    placement: 'top',
-                    animation: false,
-                    html: true,
-                    content: `<div class="popup-style">Code : ${selected.get(options.data.geoColBasemap)}<br />${(selected.get('lib_com')) ? selected.get('lib_com') + '<br />' : ''}Valeur : ${(/^[0-9,.]*$/.test(valMesure)) ? roundDec(valMesure, 1) : valMesure}</div>`
+                map.forEachFeatureAtPixel(evt.pixel, function (f) {
+                    selected = f
+                    return true
+                }, {
+                    layerFilter: function (layer) {
+                        return layer.get('name') === options.data.layer
+                    }
                 })
-                $(element).popover('show')
-            } else {
-                $(element).popover('dispose')
-            }
-        })
+                const element = popup.getElement()
+                if (selected) {
+                    let valMesure
+                    if (multipleFiltersData(data, { [options.data.geoCol]: selected.get(options.data.geoColBasemap) }).length) {
+                        valMesure = multipleFiltersData(data, { [options.data.geoCol]: selected.get(options.data.geoColBasemap) })[0][options.mesure]
+                    }
+                    const coordinate = evt.coordinate
+                    coordinate[1] += 50
+                    $(element).popover('dispose')
+                    popup.setPosition(coordinate)
+                    $(element).popover({
+                        placement: 'top',
+                        animation: false,
+                        html: true,
+                        content: `<div class="popup-style">Code : ${selected.get(options.data.geoColBasemap)}<br />${(selected.get('lib_com')) ? selected.get('lib_com') + '<br />' : ''}Valeur : ${(/^[0-9,.]*$/.test(valMesure)) ? roundDec(valMesure, 1) : valMesure}</div>`
+                    })
+                    $(element).popover('show')
+                } else {
+                    $(element).popover('dispose')
+                }
+            })
+        } else {
+            console.log("jQuery est requis pour les interactions cartographiques")
+            return
+        }
         if (options.type.mode === 'Polygone') {
             return function (feature) {
                 let styleAffected

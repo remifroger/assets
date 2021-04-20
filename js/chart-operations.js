@@ -896,46 +896,51 @@ class ChartVisualization {
      * @returns {Function} Retourne la fonctionnaité de filtrage d'un graphique, prend la forme d'une liste déroulante attaché à un élément '.chart-filter' ou '.filter-chart' du graphique
      */
     filterChartData() {
-        const chart = this.chart
-        const options = this.options
-        if (!document.querySelector(options.targetBlocChart).querySelector('.chart-filter')) {
-            document.querySelector(options.targetBlocChart).querySelector('.footer-chart').insertAdjacentHTML('beforeend', '<div class="chart-filter mb-4"><div class="alias">' + options.chart.filter.alias + '</div><select class="form-control select-filter mt-3" data-live-search="true"><option value="">' + options.chart.filter.alias + '</option></select></div>')
-        }
-        let uniqueVal = []
-        const colName = String(options.chart.filter.col)
-        const filterSelectEl = document.querySelector(options.targetBlocChart + ' .select-filter')
+        if ('undefined' !== typeof window.jQuery) {
+            const chart = this.chart
+            const options = this.options
+            if (!document.querySelector(options.targetBlocChart).querySelector('.chart-filter')) {
+                document.querySelector(options.targetBlocChart).querySelector('.footer-chart').insertAdjacentHTML('beforeend', '<div class="chart-filter mb-4"><div class="alias">' + options.chart.filter.alias + '</div><select class="form-control select-filter mt-3" data-live-search="true"><option value="">' + options.chart.filter.alias + '</option></select></div>')
+            }
+            let uniqueVal = []
+            const colName = String(options.chart.filter.col)
+            const filterSelectEl = document.querySelector(options.targetBlocChart + ' .select-filter')
 
-        return fetch(`${options.data.sourceUrl}?${objToQueryString(options.data.params)}`)
-            .then(response => response.json())
-            .then(data => {
-                uniqueVal = data['data'][options.data.index]
-                    .map(p => p[colName])
-                    .filter((col, index, arr) => arr.indexOf(col) === index)
-                    .sort((a, b) => b - a)
+            return fetch(`${options.data.sourceUrl}?${objToQueryString(options.data.params)}`)
+                .then(response => response.json())
+                .then(data => {
+                    uniqueVal = data['data'][options.data.index]
+                        .map(p => p[colName])
+                        .filter((col, index, arr) => arr.indexOf(col) === index)
+                        .sort((a, b) => b - a)
 
-                $(options.targetBlocChart + ' .select-filter').selectpicker('destroy')
-                while (filterSelectEl.firstChild) filterSelectEl.removeChild(filterSelectEl.firstChild)
-                uniqueVal.forEach((item) => {
-                    filterSelectEl.insertAdjacentHTML('beforeend', '<option value="' + item + '">' + item + '</option>')
-                })
-                $(options.targetBlocChart + ' .select-filter').selectpicker({
-                    maxOptions: 10
-                })
-                document.querySelector(options.targetBlocChart + ' .select-filter select').addEventListener('change', () => {
-                    chart.data.labels.length = 0
-                    chart.data.datasets.length = 0
-                    const currentFilters = options.data.customFilters // filtres actifs au démarrage
-                    for (const [key] of Object.entries(options.data.customFilters)) {
-                        // si une des colonnes de filtre est égale à la colonne de filtre de filterChartData, on l'enlève
-                        if (key === colName) {
-                            delete currentFilters[key]
+                    $(options.targetBlocChart + ' .select-filter').selectpicker('destroy')
+                    while (filterSelectEl.firstChild) filterSelectEl.removeChild(filterSelectEl.firstChild)
+                    uniqueVal.forEach((item) => {
+                        filterSelectEl.insertAdjacentHTML('beforeend', '<option value="' + item + '">' + item + '</option>')
+                    })
+                    $(options.targetBlocChart + ' .select-filter').selectpicker({
+                        maxOptions: 10
+                    })
+                    document.querySelector(options.targetBlocChart + ' .select-filter select').addEventListener('change', () => {
+                        chart.data.labels.length = 0
+                        chart.data.datasets.length = 0
+                        const currentFilters = options.data.customFilters // filtres actifs au démarrage
+                        for (const [key] of Object.entries(options.data.customFilters)) {
+                            // si une des colonnes de filtre est égale à la colonne de filtre de filterChartData, on l'enlève
+                            if (key === colName) {
+                                delete currentFilters[key]
+                            }
                         }
-                    }
-                    const filteredData = multipleFiltersData(data['data'][options.data.index], { [colName]: String(document.querySelector(options.targetBlocChart + ' .select-filter select').value), ...currentFilters })
-                    return this.buildChartDatasets(filteredData)
+                        const filteredData = multipleFiltersData(data['data'][options.data.index], { [colName]: String(document.querySelector(options.targetBlocChart + ' .select-filter select').value), ...currentFilters })
+                        return this.buildChartDatasets(filteredData)
+                    })
                 })
-            })
-            .catch(e => console.log(e))
+                .catch(e => console.log(e))
+        } else {
+            console.log("jQuery est requis pour la fonctionnalité de filtre d'un graphique")
+            return
+        }
     }
 
     /**
