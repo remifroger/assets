@@ -1,0 +1,27 @@
+{
+  "name": "assets-dataudiar",
+  "version": "1.0.0",
+  "description": "Shared assets for applications",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "alasql": "~0.6.3",
+    "blueimp-canvas-to-blob": "~3.27.0",
+    "chart.js": "^3.1.0",
+    "chartjs-chart-matrix": "^1.0.0-rc",
+    "chartjs-chart-sankey": "^0.4.0",
+    "chartjs-chart-treemap": "^1.0.0",
+    "chartjs-plugin-datalabels": "~2.0.0-beta.1",
+    "dom-to-image": "~2.6.0",
+    "file-saver": "~2.0.2",
+    "fuse.js": "^6.4.6",
+    "mathjs": "~7.0.1",
+    "ol": "~6.3.1",
+    "simple-statistics": "~7.1.0",
+    "tablesort": "~5.2.1"
+  }
+}
