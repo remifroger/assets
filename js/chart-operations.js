@@ -159,16 +159,17 @@ const chartOptionsChecker = (options) => {
                     return
                 }
             }
-            if (options.chart.type === 'treemap') {
+            if (['treemap', 'sankey'].includes(options.chart.type)) {
                 if (!(options.chart.customColor.active) || isEmpty(options.chart.customColor.objColors)) {
-                    console.log('[' + options.chart.name + '] Pour le type treemap, utilisez un objet customColor pour personnaliser les couleurs des catégories')
+                    console.log('[' + options.chart.name + '] Pour le type treemap ou sankey, utilisez un objet customColor pour personnaliser les couleurs des catégories')
                     return
                 }
+            }
+            if (options.chart.type === 'treemap') {
                 if (options.data.mesure.length > 1 || options.data.label.length > 1) {
                     console.log('[' + options.chart.name + '] Pour le type treemap, vous ne pouvez renseigner qu\'une mesure et un label')
                     return
                 }
-
             }
             if (options.chart.type === "keyNumber") {
                 if (options.data.mesure.length > 1 || options.data.label.length > 1) {
