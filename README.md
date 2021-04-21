@@ -13,7 +13,7 @@ jQuery est requis pour certains modules JavaScript (dossier /js) :
 - navigation.js : bootstrapToolsActivate()
 - user-interaction.js : listeTerritoires() **+ bootstrap-select**
 
-Pour éviter tout problème, importez jQuery et les dépendances de votre côté ; au niveau de votre application dans votre fichier d'entrée JavaScript principal, par exemple `index.js` (dans C:/apps/my-app/src/client/js/index.js), importez ces modules
+Pour éviter tout problème, importez jQuery et les dépendances de votre côté ; au niveau de votre application dans votre fichier d'entrée JavaScript principal, par exemple `index.js` (C:/apps/my-app/src/client/js/index.js), importez ces modules :
 
 ```js
 import './wrapper/import-jquery.js'
@@ -24,7 +24,7 @@ import 'bootstrap-select'
 import 'bootstrap-select/dist/css/bootstrap-select.min.css'
 ```
 
-Ensuite vous pouvez utiliser le package à votre guise, par exemple
+Ensuite vous pouvez utiliser le package à votre guise, par exemple :
 
 ```js
 import { scrollToTop } from 'assets-dataudiar/js/navigation.js'
@@ -37,7 +37,7 @@ scrollToTop("#id")
 
 Téléchargez la dernière release disponible, puis placez-la par exemple dans C:/apps/local-modules
 
-Puis au niveau de l'application dans laquelle vous souhaitez utiliser ce package local, par exemple dans C:/apps/my-app, installez le package
+Puis au niveau de l'application dans laquelle vous souhaitez utiliser ce package local, par exemple dans C:/apps/my-app, installez le package :
 
 ```
 cd C:/apps/my-app
