@@ -33,11 +33,20 @@ scrollToTop("#id")
 
 ## Installation
 
+Téléchargez la dernière release disponible, puis placez-la par exemple dans C:/apps/local-modules puis lancez :
+
+```
+cd C:/apps/local-modules/assets-dataudiar
+npm install
+```
+
+## Utilisation du package
+
+Nous allons voir comment utiliser les fonctionnalités du package dans une application
+
 ### En local
 
-Téléchargez la dernière release disponible, puis placez-la par exemple dans C:/apps/local-modules
-
-Puis au niveau de l'application dans laquelle vous souhaitez utiliser ce package local, par exemple dans C:/apps/my-app, installez le package :
+Au niveau de votre application (dans laquelle vous souhaitez utiliser ce package local), par exemple dans C:/apps/my-app, installez le package :
 
 ```
 cd C:/apps/my-app
@@ -48,7 +57,7 @@ Puis libre à vous d'utiliser les fonctions (voir le pré-requis jQuery ci-dessu
 
 ### En production
 
-Le package est déjà présent sur srv-gitlab et perceval ici : `/home/app/assets-dataudiar`
+Le package est déjà présent sur srv-gitlab et perceval ici : `/home/app/assets-dataudiar` (même chemin pour les deux)
 
 L'installation est faite automatiquement dans le hook de déploiement, [voir ici](http://srv-gitlab.audiar.net/rfroger/global-documentation/-/blob/master/git_deployment.md#mise-en-place-dun-hook-post-receive)
 
@@ -59,4 +68,26 @@ cd /home/app/my-app
 npm install ../assets-dataudiar
 npm install
 npm run start
+```
+
+## Documentation
+
+Une documentation est générée automatiquement à partir du package [ESDoc](https://esdoc.org/)
+
+Placez-vous au niveau de la racine du dossier assets-dataudiar, puis lancez :
+
+### Windows
+
+```
+npm install
+npx esdoc
+start docs/index.html
+```
+
+### Linux
+
+```
+npm install
+npx esdoc
+open docs/index.html
 ```

@@ -1,0 +1,22 @@
+{
+  "source": "./js",
+  "destination": "./docs",
+  "plugins": [
+    {
+      "name": "esdoc-standard-plugin",
+      "option": {
+        "manual": {
+          "index": "./README.md",
+          "files": [
+            "./README.md"
+          ]
+        }
+      }
+    }, {
+        "name": "esdoc-ecmascript-proposal-plugin", 
+        "option": {
+          "all": true
+        }
+      }
+  ]
+}
