@@ -1,5 +1,6 @@
 'use strict';
 
+import 'ol/ol.css'
 import { multipleFiltersData, getMax, isEmpty, isObject, roundDec, multipleGroupBySum } from './data-operations.js'
 import { saveFileXlsx, printDomElement } from './exports.js'
 import { styleCircle, stylePolygon, createLegend } from './map-custom-style.js'

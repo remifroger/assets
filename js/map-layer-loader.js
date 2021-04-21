@@ -5,6 +5,7 @@ import { Tile as TileLayer, Vector as VectorLayer } from 'ol/layer'
 import VectorSource from 'ol/source/Vector'
 import { WFS, GeoJSON } from 'ol/format'
 import { Stroke, Style } from 'ol/style'
+import { equalTo as equalToFilter } from 'ol/format/filter'
 
 /**
  * @desc Charge une couche géographique (vecteur)
@@ -86,4 +87,27 @@ const baseMap = (options) => {
 	return baseMap
 }
 
-export { loader, vectorOverlay, baseMap }
+const addLayers = (configGeo, map, layersAdded, filters) => {
+	let olFilters
+	if (filters.length === 1) {
+		olFilters = equalToFilter(filters[0].champ, filters[0].val)
+	} else {
+		console.log("Seulement un filtre est autorisé")
+		return
+	}
+	configGeo.layers.forEach((item) => {
+		const options = {
+			url: configGeo.url,
+			nameSpace: configGeo.nameSpacePublic,
+			layer: item.path,
+			projection: configGeo.proj,
+			filters: (item.filter) ? olFilters : null
+		}
+		window[item.id] = loader(map, options)
+		window[item.id].set('name', item.name)
+		map.addLayer(window[item.id])
+		layersAdded.push(window[item.id])
+	})
+}
+
+export { loader, vectorOverlay, baseMap, addLayers }
