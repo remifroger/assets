@@ -13,9 +13,7 @@ jQuery est requis pour certains modules JavaScript (dossier /js) :
 - navigation.js : bootstrapToolsActivate()
 - user-interaction.js : listeTerritoires() **+ bootstrap-select**
 
-Pour éviter tout problème, importez jQuery et les dépendances de votre côté :
-
-Dans votre fichier d'entrée JavaScript principal, par exemple `index.js` (dans src/client/js/index.js), importez ces modules
+Pour éviter tout problème, importez jQuery et les dépendances de votre côté ; au niveau de votre application dans votre fichier d'entrée JavaScript principal, par exemple `index.js` (dans C:/apps/my-app/src/client/js/index.js), importez ces modules
 
 ```js
 import './wrapper/import-jquery.js'
