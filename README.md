@@ -2,6 +2,15 @@
 
 Package comportant des modules réutilisables pour les applications web
 
+## Installation
+
+Téléchargez la dernière release disponible, puis placez-la par exemple dans C:/apps/local-modules puis lancez :
+
+```
+cd C:/apps/local-modules/assets-dataudiar
+npm install
+```
+
 ## Pré-requis : dépendance jQuery + plugin bootstrap-select
 
 Plugin bootstrap-select : https://developer.snapappointments.com/bootstrap-select/
@@ -29,15 +38,6 @@ Ensuite vous pouvez utiliser le package à votre guise, par exemple :
 ```js
 import { scrollToTop } from 'assets-dataudiar/js/navigation.js'
 scrollToTop("#id")
-```
-
-## Installation
-
-Téléchargez la dernière release disponible, puis placez-la par exemple dans C:/apps/local-modules puis lancez :
-
-```
-cd C:/apps/local-modules/assets-dataudiar
-npm install
 ```
 
 ## Utilisation du package
