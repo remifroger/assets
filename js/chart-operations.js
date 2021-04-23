@@ -913,7 +913,6 @@ class ChartVisualization {
                 .then(response => response.json())
                 .then(data => {
                     const dataChecked = this.dataSourceOperations(data)
-                    console.log(dataChecked)
                     if (dataChecked) {
                         uniqueVal = dataChecked
                             .map(p => p[colName])
