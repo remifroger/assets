@@ -558,7 +558,9 @@ class ChartVisualization {
                 dataObj = multipleFiltersData(dataObj, options.data.customFilters)
             }
             else if (options.chart.filter.active === true) {
-                dataObj = multipleFiltersData(dataObj, { [options.chart.filter.col]: String(document.querySelector(options.targetBlocChart + ' .select-filter select').value) })
+                if (document.querySelector(options.targetBlocChart + ' .select-filter select')) {
+                    dataObj = multipleFiltersData(dataObj, { [options.chart.filter.col]: String(document.querySelector(options.targetBlocChart + ' .select-filter select').value) })
+                }
             }
             else {
                 dataObj
@@ -910,32 +912,36 @@ class ChartVisualization {
             return fetch(`${options.data.sourceUrl}?${objToQueryString(options.data.params)}`)
                 .then(response => response.json())
                 .then(data => {
-                    uniqueVal = data['data'][options.data.index]
-                        .map(p => p[colName])
-                        .filter((col, index, arr) => arr.indexOf(col) === index)
-                        .sort((a, b) => b - a)
+                    const dataChecked = this.dataSourceOperations(data)
+                    console.log(dataChecked)
+                    if (dataChecked) {
+                        uniqueVal = dataChecked
+                            .map(p => p[colName])
+                            .filter((col, index, arr) => arr.indexOf(col) === index)
+                            .sort((a, b) => b - a)
 
-                    $(options.targetBlocChart + ' .select-filter').selectpicker('destroy')
-                    while (filterSelectEl.firstChild) filterSelectEl.removeChild(filterSelectEl.firstChild)
-                    uniqueVal.forEach((item) => {
-                        filterSelectEl.insertAdjacentHTML('beforeend', '<option value="' + item + '">' + item + '</option>')
-                    })
-                    $(options.targetBlocChart + ' .select-filter').selectpicker({
-                        maxOptions: 10
-                    })
-                    document.querySelector(options.targetBlocChart + ' .select-filter select').addEventListener('change', () => {
-                        chart.data.labels.length = 0
-                        chart.data.datasets.length = 0
-                        const currentFilters = options.data.customFilters // filtres actifs au démarrage
-                        for (const [key] of Object.entries(options.data.customFilters)) {
-                            // si une des colonnes de filtre est égale à la colonne de filtre de filterChartData, on l'enlève
-                            if (key === colName) {
-                                delete currentFilters[key]
+                        $(options.targetBlocChart + ' .select-filter').selectpicker('destroy')
+                        while (filterSelectEl.firstChild) filterSelectEl.removeChild(filterSelectEl.firstChild)
+                        uniqueVal.forEach((item) => {
+                            filterSelectEl.insertAdjacentHTML('beforeend', '<option value="' + item + '">' + item + '</option>')
+                        })
+                        $(options.targetBlocChart + ' .select-filter').selectpicker({
+                            maxOptions: 10
+                        })
+                        document.querySelector(options.targetBlocChart + ' .select-filter select').addEventListener('change', () => {
+                            chart.data.labels.length = 0
+                            chart.data.datasets.length = 0
+                            const currentFilters = options.data.customFilters // filtres actifs au démarrage
+                            for (const [key] of Object.entries(options.data.customFilters)) {
+                                // si une des colonnes de filtre est égale à la colonne de filtre de filterChartData, on l'enlève
+                                if (key === colName) {
+                                    delete currentFilters[key]
+                                }
                             }
-                        }
-                        const filteredData = multipleFiltersData(data['data'][options.data.index], { [colName]: String(document.querySelector(options.targetBlocChart + ' .select-filter select').value), ...currentFilters })
-                        return this.buildChartDatasets(filteredData)
-                    })
+                            const filteredData = multipleFiltersData(dataChecked, { [colName]: String(document.querySelector(options.targetBlocChart + ' .select-filter select').value), ...currentFilters })
+                            return this.buildChartDatasets(filteredData)
+                        })
+                    }
                 })
                 .catch(e => console.log(e))
         } else {
