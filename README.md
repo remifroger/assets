@@ -11,7 +11,11 @@ cd C:/apps/local-modules/assets-dataudiar
 npm install
 ```
 
-## Pré-requis : dépendance jQuery + plugin bootstrap-select
+## Utilisation du package
+
+Comment utiliser les fonctionnalités du package dans une application
+
+### Pré-requis : dépendance jQuery + plugin bootstrap-select
 
 Plugin bootstrap-select : https://developer.snapappointments.com/bootstrap-select/
 
@@ -39,10 +43,6 @@ Ensuite vous pouvez utiliser le package à votre guise, par exemple :
 import { scrollToTop } from 'assets-dataudiar/js/navigation.js'
 scrollToTop("#id")
 ```
-
-## Utilisation du package
-
-Nous allons voir comment utiliser les fonctionnalités du package dans une application
 
 ### En local
 
