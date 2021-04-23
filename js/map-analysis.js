@@ -1,7 +1,7 @@
 'use strict';
 
 import 'ol/ol.css'
-import { multipleFiltersData, getMax, isEmpty, isObject, roundDec, multipleGroupBySum } from './data-operations.js'
+import { multipleFiltersData, getMax, isEmpty, isObject, roundDec, multipleGroupBySum, objToQueryString } from './data-operations.js'
 import { saveFileXlsx, printDomElement } from './exports.js'
 import { styleCircle, stylePolygon, createLegend } from './map-custom-style.js'
 import { ckmeans } from 'simple-statistics'
@@ -370,14 +370,14 @@ class MapAnalysis {
         this.id = id
         this.legendeProperties
         this.options = options
+        this.data
         globalAnalyzes.push(this)
     }
 
-    dataSourceOperations(data, dataLayers) {
+    dataSourceOperations(data) {
         let dataObj // Array of objects
         const options = this.options
-        if (options.data.source === 'Externe') {
-            // If data comes from external source (JSON response from AJAX call with options.data.sourceUrl and options.data.params)
+        if (['Externe', 'Interne'].includes(options.data.source)) {
             // Check if data comes from a standard JSON API result (res['data']), see: https://jsonapi.org/
             if (data['data']) {
                 // If an index is specified, go through it and store the result into dataObj
@@ -404,11 +404,6 @@ class MapAnalysis {
                         dataObj = data
                     }
                 }
-            }
-        } else if (options.data.source === 'Interne') {
-            // If data comes from internal source (JSON response from AJAX call with options.data.sourceUrl and options.data.params)
-            if (dataLayers) {
-                dataObj = dataLayers
             }
         } else {
             console.log('La source de données est incorrecte pour ' + options.title)
