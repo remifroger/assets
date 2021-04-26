@@ -814,7 +814,6 @@ class ChartVisualization {
                         }
                     }
                 } else {
-                    //orderColorsDataset(options.chart.customColor.type, chart, options.chart.customColor.objColors)
                     this.orderColorsDataset()
                 }
             })
@@ -862,10 +861,12 @@ class ChartVisualization {
                 if (chart.data.datasets.length > 1) {
                     chart.data.datasets[i].backgroundColor = arraySortedBackgroundColor[i]
                     chart.data.datasets[i].borderColor = arraySortedBorderColor[i]
+                    chart.data.datasets[i].fill = true
                 }
                 else {
                     chart.data.datasets[i].backgroundColor = arraySortedBackgroundColor
                     chart.data.datasets[i].borderColor = arraySortedBorderColor
+                    chart.data.datasets[i].fill = true
                 }
             })
             return chart.update()
