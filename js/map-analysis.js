@@ -370,7 +370,6 @@ class MapAnalysis {
         this.id = id
         this.legendeProperties
         this.options = options
-        this.data
         globalAnalyzes.push(this)
     }
 
@@ -588,6 +587,7 @@ class MapAnalysis {
      * @desc Construct cartographic analysis from legende
      *
      * @param {Array.<Object>} data - Data object
+     * @param {Object} map - OL map instantiated
      * 
      * @returns {Function} Return the analysis style
      */

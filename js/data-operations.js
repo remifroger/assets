@@ -148,7 +148,7 @@ const getMin = (data, column, excludeZero) => {
  *
  * @param {Array.<Object>} data - Objet
  * @param {Object} filters - Les filtres à appliquer - ex. : {'field': ['value1', 'value2'], 'other_field': ['value']}
- * @tips les filtres équivalent à "égal à", il est également possible d'obtenir le max ou le min : {'field': [max{field}]} ou {'field': [min{field}]}
+ * Les filtres équivalent à "égal à", il est également possible d'obtenir le max ou le min : {'field': [max{field}]} ou {'field': [min{field}]}
  * {@link https://gist.github.com/jherax/f11d669ba286f21b7a2dcff69621eb72}
  * 
  * @returns {Array.<Object>} Retourne l'objet filtré
@@ -232,6 +232,13 @@ const isObject = (x) => {
     return Object.prototype.toString.call(x) === '[object Object]'
 }
 
+/**
+ * @desc Transforme un objet contenant de paramètres URL {paramètre: valeur} en chaîne de caractère, par exemple {param1: "Toto", param2: "Rennes"} devient "param1=Toto&param2=Rennes"
+ *
+ * @param {Object} obj - Les paramètres
+ *
+ * @returns {Boolean} Retourne la chaîne de caractère de paramètres à ajouter à l'URL
+ */
 const objToQueryString = (obj) => {
     const keyValuePairs = []
     for (const key in obj) {

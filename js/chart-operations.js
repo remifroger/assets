@@ -521,6 +521,13 @@ class ChartVisualization {
         return this.chart
     }
 
+    /**
+     * @desc Prépare les données avant la création du graphique
+     * 
+     * @param {Object} data - Les données à vérifier
+     *
+     * @returns {Object} Retourne les données nettoyées
+     */
     dataSourceOperations(data) {
         let dataObj // Array of objects
         const options = this.options
@@ -580,11 +587,11 @@ class ChartVisualization {
     }
 
     /**
-     * @desc Formate et construit un graphique (dépend de Chart.js)
+     * @desc Formate le(s) dataset(s) et les options du graphique à partir de data 
      *
-     * @param {Array.<Object>} data - jeu de données
+     * @param {Object} data - Données préparées
      * 
-     * @returns {String} Retourne le statut de construction du graphique
+     * @returns {Object} Retourne le graphique avec le(s) dataset(s)
      */
     buildChartDatasets(data) {
         const options = this.options
@@ -818,7 +825,7 @@ class ChartVisualization {
     /**
      * @desc Applique un style au graphique à partir d'un objet contenant des couleurs en fonction des catégories
      * 
-     * @returns {Function} Retourne le graphique à jour avec le style personnalisé
+     * @returns {Object} Retourne le graphique à jour avec le style personnalisé
      */
     orderColorsDataset() {
         if (this.options.chart.type !== 'treemap') {
@@ -866,9 +873,9 @@ class ChartVisualization {
     }
 
     /**
-     * @desc Supprime le.s dataset.s d'un graphique (voir la documentation de Chart.js pour la différence entre dataset et data)
+     * @desc Supprime le(s) dataset(s) d'un graphique (voir la documentation de Chart.js pour la différence entre dataset et data)
      *
-     * @returns {Function} Retourne le graphique à jour avec le.s dataset.s en moins
+     * @returns {Function} Retourne le graphique à jour avec le(s) dataset(s) en moins
      */
     removeDatasets() {
         const chart = this.chart
@@ -879,7 +886,7 @@ class ChartVisualization {
     }
 
     /**
-     * @desc Supprime le.s data.s d'un graphique (voir la documentation de Chart.js pour la différence entre dataset et data)
+     * @desc Supprime le(s) data(s) d'un graphique (voir la documentation de Chart.js pour la différence entre dataset et data)
      * 
      * @returns {Function} Retourne le graphique à jour avec le.s data.s en moins
      */
@@ -951,7 +958,6 @@ class ChartVisualization {
 
     /**
      * @desc Active la fonctionnalité de comparaison territoriale d'un graphique
-     * Dépend des flux '/api/appConfig' (génération des échelles territoriales accessibles) et '/territoires' (remplissage listes déroulantes des territoires)
      *
      * @returns {Function} Retourne la fonctionnaité de comparaison territoriale d'un graphique
      */
@@ -961,10 +967,12 @@ class ChartVisualization {
         const target = this.options.targetBlocChart
         const chartConfig = this.options.chart
         const dataConfig = this.options.data
+        const urlAppConfig = '/api/appConfig'
+        const urlApiTerritoires = '/api/territoires'
 
         document.querySelector(target).querySelector('.footer-chart').insertAdjacentHTML('beforeend', '<button class="classic-button collapsed rect" type="button" data-toggle="collapse" data-target="#compare-' + chartConfig.name + '" aria-expanded="false" aria-controls="compare-' + chartConfig.name + '"><i class="fas fa-search mr-2"></i>Comparer</button>')
         document.querySelector(target).querySelector('.footer-chart').insertAdjacentHTML('beforeend', '<div class="collapse form mt-3" id="compare-' + chartConfig.name + '"><div class="alert alert-danger compare-max mb-3" role="alert" style="display: none; margin-bottom: auto;"></div><div class="form-territoire no-alert"></div></div>')
-        listeTerritoires(target + ' .form-territoire', '/api/appConfig', '/api/territoires')
+        listeTerritoires(target + ' .form-territoire', urlAppConfig, urlApiTerritoires)
         document.querySelector(target + ' #compare-' + chartConfig.name).insertAdjacentHTML('beforeend', '<button class="classic-button rect add mt-3 mr-2" type="submit"><i class="fas fa-plus mr-2"></i>Ajouter</button><button class="classic-button rect remove mt-3" type="submit"><i class="fas fa-minus mr-2"></i>Supprimer</button>')
 
         const urlParams = dataConfig.params
@@ -1015,7 +1023,7 @@ class ChartVisualization {
     /**
      * @desc Add chart components
      *
-     * @param {Array.<Object>} data - Data object
+     * @param {Object} data - Data object
      * 
      * @returns {Function} Return components instantiated
      */
@@ -1143,6 +1151,13 @@ class ChartVisualization {
             })
     }
 
+    /**
+     * @desc Construit le graphique
+     *
+     * @param {Object} dataObj - Data object
+     * 
+     * @returns {Function} Return chart
+     */
     buildChart(dataObj) {
         const options = this.options
         if (options.chart.type === 'table') {

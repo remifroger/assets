@@ -87,6 +87,25 @@ const baseMap = (options) => {
 	return baseMap
 }
 
+/**
+ * @desc Ajoute les couches géographiques à une carte
+ *
+ * @param {String} configGeo[].url - GeoServer URL
+ * @param {String} configGeo[].nameSpacePublic - GeoServer namespace
+ * @param {String} configGeo[].proj - Geographic projection (ex. : EPSG:3857)
+ * @param {Array} configGeo[].layers[] - List of layer name from GeoServer namespace
+ * @param {String} configGeo[].layers[].id - Layer id (yours, not from GeoServer)
+ * @param {String} configGeo[].layers[].path - GeoServer layer path
+ * @param {String} configGeo[].layers[].name - Layer name label (yours, not from GeoServer)
+ * @param {Boolean} configGeo[].layers[].filter - Enable filters or not (if yes, it wil use filters parameter, see below)
+ * @param {Object} map - OpenLayers map instantiated (layers will be added to this map)
+ * @param {Array} layersAdded - List to get the layers added (should be declared outside the function - bad practice, sorry)
+ * @param {?Array.<Object>} filters - List of filters applied to the layer if configGeo[].layers[].filter is enabled - only 1 filter is authorized (one object) and works as equality filter (equalToFilter())
+ * @param {String} filters[].champ - Filter field name
+ * @param {String|Number} filters[].val - Filter value
+ * 
+ * @returns {Object} Returns layers added to the map (and the list layersAdded)
+ */
 const addLayers = (configGeo, map, layersAdded, filters) => {
 	let olFilters
 	if (filters.length === 1) {

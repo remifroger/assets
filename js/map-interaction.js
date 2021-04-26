@@ -7,7 +7,6 @@ import { vectorOverlay } from './map-layer-loader.js'
  *
  * @param {Object} pixel - Pixel (tableau avec deux éléments [x, y])
  * @param {Object} map - Objet map instancié
- * @param {Object} overlayer - Couche "fictive" destinée à récupérer les résultats 
  * @param {String} layerSelected - Nom de la couche qu'on souhaite intersected avec map
  * @param {String} colValue - Champ de la couche dont on souhaite récupérer la valeur
  * 

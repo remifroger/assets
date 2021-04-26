@@ -161,6 +161,10 @@ const isHidden = (el) => {
     return (style.display === 'none')
 }
 
+/**
+ * @desc Cacher les enfants d'un élément
+ *
+ */
 const hideChildrenFromEl = (el) => {
     if (el.childNodes[0]) {
         const subEl = el.childNodes[0].childNodes
@@ -170,6 +174,10 @@ const hideChildrenFromEl = (el) => {
     }
 }
 
+/**
+ * @desc Afficher les enfants d'un élément
+ *
+ */
 const showChildrenFromEl = (el) => {
     if (el.childNodes[0]) {
         const subEl = el.childNodes[0].childNodes
