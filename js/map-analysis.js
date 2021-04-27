@@ -588,10 +588,18 @@ class MapAnalysis {
      *
      * @param {Array.<Object>} data - Data object
      * @param {Object} map - OL map instantiated
+     * @param {Object} interactionOpts - Options to set map interactions
+     * @param {String} interactionsOpts.click.geoValueParamName - URL parameter for geo value (for example in "url?geoLevel=country&geoValue=France", geoValueParamName is the string 'geoValue')
+     * @param {String} interactionsOpts.click.geoLevelParamName - URL parameter for geo level (for example in "url?geoLevel=country&geoValue=France", geoLevelParamName is the string 'geoLevel')
+     * @param {String} interactionsOpts.click.geoLevelVal - Value for the geoLevelParamName URL parameter according to the layer (for example: if the analysis is based on "myCountries" layer - from options.data.layer - the geo level value is the URL parameter according to this layer)
+     * @param {String} interactionsOpts.click.geoLevelCol - Column name to display as label from the layer
+     * @param {('popup'|'panel')} interactionsOpts.click.type - Type of interaction on map click ('popup': open a modal from interactionsOpts.click.target element  / 'panel': show a panel contained in interactionsOpts.click.target element)
+     * @param {String} interactionsOpts.click.target - DOM element to show on map click according to interactionsOpts.click.type strategy 
+     * @param {String} interactionsOpts.pointermove.geoLevelCol - Column name to display as label from the layer
      * 
      * @returns {Function} Return the analysis style
      */
-    buildStyle(data, map) {
+    buildStyle(data, map, interactionOpts) {
         const legendeProp = this.legendeProperties
         const options = this.options
         const popup = new Overlay({
@@ -601,21 +609,36 @@ class MapAnalysis {
             map.addEventListener("click", (evt) => {
                 const mapClickFeature = displayFeatureInfo(evt.pixel, map, options.data.layer, options.data.geoColBasemap)
                 const codeGeoSelect = []
-                codeGeoSelect.push(mapClickFeature[0])
-                const communeName = displayFeatureInfo(evt.pixel, map, options.data.layer, 'lib_com')
-                if (communeName[0] !== undefined) {
-                    $('#commune-access-modal').modal()
-                    const elComName = document.querySelector('.commune-name')
-                    while (elComName.firstChild) elComName.removeChild(elComName.firstChild)
-                    elComName.insertAdjacentHTML('beforeend', '<b>' + communeName[0] + '</b> ?')
-                    if (document.querySelector('.insee-link')) document.querySelector('.insee-link').remove()
-                    const currentParams = getAllUrlParameters()
-                    currentParams['territoire'] = codeGeoSelect[0]
-                    currentParams['echelle'] = 'commune'
-                    document.querySelector('#commune-access-modal .go').addEventListener('click', () => {
-                        window.location.href = window.location.href.split('?')[0] + '?' + Object.entries(currentParams).map(([key, val]) => `${key}=${val}`).join('&')
-                    })
+                if (mapClickFeature[0] !== undefined) {
+                    codeGeoSelect.push(mapClickFeature[0])
+                    const geoVal = displayFeatureInfo(evt.pixel, map, options.data.layer, interactionOpts.click.geoLevelCol)
+                    if (geoVal[0] !== undefined) {
+                        if (interactionOpts.click.type === "popup") {
+                            const currentParams = getAllUrlParameters()
+                            currentParams[interactionOpts.click.geoValueParamName] = codeGeoSelect[0]
+                            currentParams[interactionOpts.click.geoLevelParamName] = interactionOpts.click.geoLevelVal
+                            const urlToGeoValue = window.location.href.split('?')[0] + '?' + Object.entries(currentParams).map(([key, val]) => `${key}=${val}`).join('&')
+                            const modalEl = document.querySelector(interactionOpts.click.target)
+                            while (modalEl.firstChild) modalEl.removeChild(modalEl.firstChild)
+                            modalEl.insertAdjacentHTML('beforeend',
+                                `<div class="modal-dialog modal-dialog centered" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-body pt-4 pl-4 pr-4">
+                                            <span class="text-muted">Souhaitez-vous accéder à <span class="val-name">${geoVal[0]}</span>
+                                            </span>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <a class="button classic-button rect go" type="button" href=${urlToGeoValue}>Oui</a>
+                                            <button class="classic-button rect" type="button" data-dismiss="modal">Non</button>
+                                        </div>
+                                    </div>
+                                </div>`
+                            )
+                            $(modalEl).modal()
+                        }
+                    }
                 } else {
+                    $(interactionOpts.click.target).modal('hide')
                     console.log(options.title + ' : cette fonctionnalité fonctionne seulement avec les communes et un flux contenant un champ "lib_com"')
                 }
             })
@@ -647,7 +670,7 @@ class MapAnalysis {
                         placement: 'top',
                         animation: false,
                         html: true,
-                        content: `<div class="popup-style">Code : ${selected.get(options.data.geoColBasemap)}<br />${(selected.get('lib_com')) ? selected.get('lib_com') + '<br />' : ''}Valeur : ${(/^[0-9,.]*$/.test(valMesure)) ? roundDec(valMesure, 1) : valMesure}</div>`
+                        content: `<div class="popup-style">Code : ${selected.get(options.data.geoColBasemap)}<br />${(selected.get(interactionOpts.click.geoLevelCol)) ? selected.get(interactionOpts.click.geoLevelCol) + '<br />' : ''}Valeur : ${(/^[0-9,.]*$/.test(valMesure)) ? roundDec(valMesure, 1) : valMesure}</div>`
                     })
                     $(element).popover('show')
                 } else {
