@@ -1226,6 +1226,24 @@ const typeCheck = (chartType) => {
 }
 
 /**
+ * @desc Create chart analysis using new ChartVisualization class instance and methods + specific options
+ *
+ * @param {Object} options - Chart analysis options, see chartOptionsChecker() for the object properties doc
+ * @param {Array.<Object>} data - Data object used to create analysis
+ * 
+ * @returns {Object} Return the chart instance
+ */
+const createChartAnalysis = (options, data) => {
+    const Chart = new ChartVisualization(options)
+    const dataChecked = Chart.dataSourceOperations(data)
+    if (dataChecked) {
+        return Chart.buildChart(dataChecked), Chart.addChartComponents(dataChecked)
+    } else {
+        console.log(options.chart.title.text + ' (' + options.data.sourceUrl + ') : données non disponibles')
+    }
+}
+
+/**
  * @desc Paramètres globaux des graphiques
  * 
  * @returns {Function} Affecte des paramètres globaux à tous les graphiques
@@ -1240,4 +1258,4 @@ const chartGlobalParams = () => {
     return Chart
 }
 
-export { globalCharts, chartOptionsChecker, ChartVisualization, chartGlobalParams }
+export { globalCharts, chartOptionsChecker, ChartVisualization, chartGlobalParams, createChartAnalysis }

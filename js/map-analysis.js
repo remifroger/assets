@@ -588,22 +588,23 @@ class MapAnalysis {
      *
      * @param {Array.<Object>} data - Data object
      * @param {Object} map - OL map instantiated
-     * @param {Object} interactionOpts - Options to set map interactions
-     * @param {String} interactionsOpts.click.geoValueParamName - URL parameter for geo value (for example in "url?geoLevel=country&geoValue=France", geoValueParamName is the string 'geoValue')
-     * @param {String} interactionsOpts.click.geoLevelParamName - URL parameter for geo level (for example in "url?geoLevel=country&geoValue=France", geoLevelParamName is the string 'geoLevel')
-     * @param {String} interactionsOpts.click.geoLevelVal - Value for the geoLevelParamName URL parameter according to the layer (for example: if the analysis is based on "myCountries" layer - from options.data.layer - the geo level value is the URL parameter according to this layer)
-     * @param {String} interactionsOpts.click.geoLevelCol - Column name to display as label from the layer
-     * @param {('popup'|'panel')} interactionsOpts.click.type - Type of interaction on map click ('popup': open a modal from interactionsOpts.click.target element  / 'panel': show a panel contained in interactionsOpts.click.target element)
-     * @param {String} interactionsOpts.click.target - DOM element to show on map click according to interactionsOpts.click.type strategy 
-     * @param {String} interactionsOpts.pointermove.geoLevelCol - Column name to display as label from the layer
+     * @param {Object} olLayerOptions - Options to set map interactions according to the GeoServer layer configuration
+     * @param {String} olLayerOptions.interaction.geoValueParamName - URL parameter for geo value (for example in "url?geoLevel=country&geoValue=France", geoValueParamName is the string 'geoValue')
+     * @param {String} olLayerOptions.interaction.geoLevelParamName - URL parameter for geo level (for example in "url?geoLevel=country&geoValue=France", geoLevelParamName is the string 'geoLevel')
+     * @param {String} olLayerOptions.interaction.geoLevelParamValue - Value for the geoLevelParamName URL parameter according to the layer (for example: if the analysis is based on "myCountries" layer - from options.data.layer - the geo level value is the URL parameter according to this layer)
+     * @param {String} olLayerOptions.interaction.click.label - Column name to display as label from the layer
+     * @param {('modal'|'panel')} olLayerOptions.interaction.click.style - Type of interaction on map click ('modal': open a modal using the target element / 'panel': show a panel contained in the target element)
+     * @param {String} olLayerOptions.interaction.click.target - DOM element to show on map click according to click.style strategy
+     * @param {String} olLayerOptions.interaction.mouseover.label - Column name to display as label from the layer
+     * @param {String} olLayerOptions.interaction.mouseover.target - DOM element to show on map mouseover according to mouseover.style strategy
      * 
      * @returns {Function} Return the analysis style
      */
-    buildStyle(data, map, interactionOpts) {
+    buildStyle(data, map, olLayerOptions) {
         const legendeProp = this.legendeProperties
         const options = this.options
         const popup = new Overlay({
-            element: document.getElementById('popup')
+            element: document.querySelector(olLayerOptions.interaction.mouseover.target)
         })
         if ('undefined' !== typeof window.jQuery) {
             map.addEventListener("click", (evt) => {
@@ -611,17 +612,17 @@ class MapAnalysis {
                 const codeGeoSelect = []
                 if (mapClickFeature[0] !== undefined) {
                     codeGeoSelect.push(mapClickFeature[0])
-                    const geoVal = displayFeatureInfo(evt.pixel, map, options.data.layer, interactionOpts.click.geoLevelCol)
+                    const geoVal = displayFeatureInfo(evt.pixel, map, options.data.layer, olLayerOptions.interaction.click.label)
                     if (geoVal[0] !== undefined) {
-                        if (interactionOpts.click.type === "popup") {
+                        if (olLayerOptions.interaction.click.style === "modal") {
                             const currentParams = getAllUrlParameters()
-                            currentParams[interactionOpts.click.geoValueParamName] = codeGeoSelect[0]
-                            currentParams[interactionOpts.click.geoLevelParamName] = interactionOpts.click.geoLevelVal
+                            currentParams[olLayerOptions.interaction.geoValueParamName] = codeGeoSelect[0]
+                            currentParams[olLayerOptions.interaction.geoLevelParamName] = olLayerOptions.interaction.geoLevelParamValue
                             const urlToGeoValue = window.location.href.split('?')[0] + '?' + Object.entries(currentParams).map(([key, val]) => `${key}=${val}`).join('&')
-                            const modalEl = document.querySelector(interactionOpts.click.target)
+                            const modalEl = document.querySelector(olLayerOptions.interaction.click.target)
                             while (modalEl.firstChild) modalEl.removeChild(modalEl.firstChild)
                             modalEl.insertAdjacentHTML('beforeend',
-                                `<div class="modal-dialog modal-dialog centered" role="document">
+                                `<div class="modal-dialog modal-dialog-centered" role="document">
                                     <div class="modal-content">
                                         <div class="modal-body pt-4 pl-4 pr-4">
                                             <span class="text-muted">Souhaitez-vous accéder à <span class="val-name">${geoVal[0]}</span>
@@ -638,8 +639,8 @@ class MapAnalysis {
                         }
                     }
                 } else {
-                    $(interactionOpts.click.target).modal('hide')
-                    console.log(options.title + ' : cette fonctionnalité fonctionne seulement avec les communes et un flux contenant un champ "lib_com"')
+                    $(olLayerOptions.interaction.click.target).modal('hide')
+                    console.log(options.title + ' : problème avec les paramètres de la configuration GeoServer')
                 }
             })
             map.addOverlay(popup)
@@ -670,7 +671,7 @@ class MapAnalysis {
                         placement: 'top',
                         animation: false,
                         html: true,
-                        content: `<div class="popup-style">Code : ${selected.get(options.data.geoColBasemap)}<br />${(selected.get(interactionOpts.click.geoLevelCol)) ? selected.get(interactionOpts.click.geoLevelCol) + '<br />' : ''}Valeur : ${(/^[0-9,.]*$/.test(valMesure)) ? roundDec(valMesure, 1) : valMesure}</div>`
+                        content: `<div class="popup-style">Code : ${selected.get(options.data.geoColBasemap)}<br />${(selected.get(olLayerOptions.interaction.mouseover.label)) ? selected.get(olLayerOptions.interaction.mouseover.label) + '<br />' : ''}Valeur : ${(/^[0-9,.]*$/.test(valMesure)) ? roundDec(valMesure, 1) : valMesure}</div>`
                     })
                     $(element).popover('show')
                 } else {
@@ -887,4 +888,29 @@ const setCartoAnalyzesSelector = function (options, layers) {
     }
 }
 
-export { globalAnalyzes, MapAnalysis, setCartoAnalyzesSelector, mapOptionsChecker }
+/**
+ * @desc Create map analysis using new MapAnalysis class instance and methods + specific options
+ *
+ * @param {String|Number} id - Map analysis ID
+ * @param {Object} options - Map analysis options, see mapOptionsChecker() for the object properties doc
+ * @param {Array.<Object>} data - Data object used to create analysis
+ * @param {Object} map - OpenLayers map instanciated (map analysis will be associated to this map)
+ * @param {Object} olLayerOptions - Options of the GeoServer layer, see MapAnalysis class | buildStyle() method for the properties doc
+ * @returns {Object} Return the style according to the map analysis instanciated
+ */
+const createMapAnalysis = (id, analysisOptions, data, map, olLayerOptions) => {
+    const AnalyseInit = new MapAnalysis(id, analysisOptions)
+    const dataChecked = AnalyseInit.dataSourceOperations(data)
+    if (dataChecked) {
+        AnalyseInit.addMapComponents(dataChecked)
+        AnalyseInit.cartoClassification(dataChecked)
+        return AnalyseInit.apply = function () {
+            return AnalyseInit.buildStyle(dataChecked, map, olLayerOptions)
+        }
+    } else {
+        console.log(analysisOptions.title + ' (' + analysisOptions.data.sourceUrl + ') : données non disponibles')
+        document.querySelector(analysisOptions.blocMapTarget).childNodes[0].insertAdjacentHTML('beforeend', '<div class="alert-infos mt-3"><div class="alert alert-dark" role="alert">' + analysisOptions.title + ' (' + analysisOptions.data.sourceUrl + ') : données non disponibles</div></div>')
+    }
+}
+
+export { globalAnalyzes, MapAnalysis, setCartoAnalyzesSelector, mapOptionsChecker, createMapAnalysis }
