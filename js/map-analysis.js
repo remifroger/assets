@@ -1,13 +1,14 @@
 'use strict';
 
 import 'ol/ol.css'
-import { multipleFiltersData, getMax, isEmpty, isObject, roundDec, multipleGroupBySum, objToQueryString } from './data-operations.js'
+import { multipleFiltersData, getMax, isEmpty, isObject, roundDec, multipleGroupBySum, objToQueryString, extractBrackets } from './data-operations.js'
 import { saveFileXlsx, printDomElement } from './exports.js'
 import { styleCircle, stylePolygon, createLegend } from './map-custom-style.js'
 import { ckmeans } from 'simple-statistics'
 import Overlay from 'ol/Overlay'
 import { displayFeatureInfo } from './map-interaction.js'
 import { getAllUrlParameters } from './navigation.js'
+import { updateChart, globalCharts } from './chart-operations.js'
 
 /**
  * @desc Vérifie la validité des options configurées pour générer une analyse cartographique
@@ -606,6 +607,9 @@ class MapAnalysis {
         const popup = new Overlay({
             element: document.querySelector(olLayerOptions.interaction.mouseover.target)
         })
+        if (olLayerOptions.interaction.click.style === "panel") {
+            for (const el of document.querySelectorAll(olLayerOptions.interaction.click.target)) el.style.display = "none"
+        }
         if ('undefined' !== typeof window.jQuery) {
             map.addEventListener("click", (evt) => {
                 const mapClickFeature = displayFeatureInfo(evt.pixel, map, options.data.layer, options.data.geoColBasemap)
@@ -636,11 +640,40 @@ class MapAnalysis {
                                 </div>`
                             )
                             $(modalEl).modal()
+                        } else if (olLayerOptions.interaction.click.style === "panel") {
+                            const panelEl = document.querySelectorAll(olLayerOptions.interaction.click.target)
+                            if (panelEl.length) {
+                                const panelElChildrenId = []
+                                for (const el of panelEl) {
+                                    el.style.display = "block"
+                                    panelElChildrenId.push(el.id)
+                                }
+                                document.querySelector(olLayerOptions.interaction.click.target).scrollIntoView({ behavior: "smooth", block: "end" })
+                                if (globalCharts.length) {
+                                    const chartsFilteredOnPanel = globalCharts.filter((c) => panelElChildrenId.includes(c.options.targetBlocChart.substring(0, 1) === '#' ? c.options.targetBlocChart.substring(1) : c.options.targetBlocChart))
+                                    chartsFilteredOnPanel.forEach((chart) => {
+                                        const currentParams = getAllUrlParameters()
+                                        extractBrackets(currentParams, chart.options.data.params)
+                                        chart.options.data.params[olLayerOptions.interaction.geoValueParamName] = codeGeoSelect[0]
+                                        updateChart(chart)
+                                    })
+                                }
+                            }
+                        } else {
+                            console.log(options.title + ' : l\'interaction liée à la couche géographique doit être de type "modal" ou "panel" (GeoServer configuration -> layers[].interaction.click.style)')
+                        }
+                    } else {
+                        if (olLayerOptions.interaction.click.style === "panel") {
+                            for (const el of document.querySelectorAll(olLayerOptions.interaction.click.target)) el.style.display = "none"
                         }
                     }
                 } else {
-                    $(olLayerOptions.interaction.click.target).modal('hide')
-                    console.log(options.title + ' : problème avec les paramètres de la configuration GeoServer')
+                    if (olLayerOptions.interaction.click.style === "modal") {
+                        $(olLayerOptions.interaction.click.target).modal('hide')
+                    }
+                    else if (olLayerOptions.interaction.click.style === "panel") {
+                        for (const el of document.querySelectorAll(olLayerOptions.interaction.click.target)) el.style.display = "none"
+                    }
                 }
             })
             map.addOverlay(popup)

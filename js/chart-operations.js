@@ -6,7 +6,7 @@ import { TreemapController, TreemapElement } from 'chartjs-chart-treemap'
 import { SankeyController, Flow } from "chartjs-chart-sankey"
 import { MatrixController, MatrixElement } from "chartjs-chart-matrix"
 import { multipleFiltersData, isEmpty, isObject, groupBy, roundDec, objToQueryString, multipleGroupBySum } from './data-operations.js'
-import { fullScreen, isHidden, hideChildrenFromEl } from './navigation.js'
+import { fullScreen, isHidden, hideChildrenFromEl, showChildrenFromElAlt } from './navigation.js'
 import { printDomElement, saveFileXlsx } from './exports.js'
 import { listeTerritoires } from './user-interaction.js'
 import { chartOpts } from './chart-options.js'
@@ -508,6 +508,10 @@ class ChartVisualization {
         let pluginChart
         if (!['treemap', 'bubble'].includes(options.chart.type)) {
             pluginChart = [ChartDataLabels]
+        } else {
+            pluginChart = {
+                datalabels: false
+            }
         }
         this.chart = new Chart(ctx, {
             type: typeCheck(options.chart.type),
@@ -522,14 +526,13 @@ class ChartVisualization {
     }
 
     /**
-     * @desc Prépare les données avant la création du graphique
+     * @desc Prépare les données
      * 
      * @param {Object} data - Les données à vérifier
      *
-     * @returns {Object} Retourne les données nettoyées
+     * @returns {Object} Retourne les données
      */
-    dataSourceOperations(data) {
-        let dataObj // Array of objects
+    dataSource(data) {
         const options = this.options
         // If data comes from external source (JSON response from AJAX call with options.data.sourceUrl and options.data.params)
         // Check if data comes from a standard JSON API result (res['data']), see: https://jsonapi.org/
@@ -537,12 +540,12 @@ class ChartVisualization {
             // If an index is specified, go through it and store the result into dataObj
             if (options.data.index !== null) {
                 if (data['data'][options.data.index]) {
-                    dataObj = data['data'][options.data.index]
+                    return data['data'][options.data.index]
                 }
             } else {
                 // Else, just store the data property into dataObj
                 if (data['data']) {
-                    dataObj = data['data']
+                    return data['data']
                 }
             }
         } else {
@@ -550,27 +553,38 @@ class ChartVisualization {
             // // If an index is specified, go through it and store the result into dataObj
             if (options.data.index !== null) {
                 if (data[options.data.index]) {
-                    dataObj = data[options.data.index]
+                    return data[options.data.index]
                 }
             } else {
                 // Else, if exists, try to store the root object
                 if (data) {
-                    dataObj = data
+                    return data
                 }
             }
         }
-        if (dataObj) {
+    }
+
+    /**
+     * @desc Utilise la source de données et application des filters avant la création du graphique
+     * 
+     * @param {Object} data - Les données à vérifier
+     *
+     * @returns {Object} Retourne les données nettoyées, prêtes à l'emploi pour le graphique
+     */
+    dataSourceOperations(data) {
+        const dataSourceClean = this.dataSource(data)
+        let dataObj // Array of objects
+        const options = this.options
+        if (dataSourceClean) {
             // If options.data.customFilters isn't empty, apply filters and reassign the result to dataObj
-            if (Object.keys(options.data.customFilters).length > 0) {
-                dataObj = multipleFiltersData(dataObj, options.data.customFilters)
+            if (Object.keys(options.data.customFilters).length > 0 && !(options.chart.filter.active)) {
+                dataObj = multipleFiltersData(dataSourceClean, options.data.customFilters)
             }
-            else if (options.chart.filter.active === true) {
-                if (document.querySelector(options.targetBlocChart + ' .select-filter select')) {
-                    dataObj = multipleFiltersData(dataObj, { [options.chart.filter.col]: String(document.querySelector(options.targetBlocChart + ' .select-filter select').value) })
-                }
+            else if (Object.keys(options.data.customFilters).length > 0 && options.chart.filter.active) {
+                dataObj = multipleFiltersData(dataSourceClean, options.data.customFilters)
             }
             else {
-                dataObj
+                dataObj = dataSourceClean
             }
         }
         if (isEmpty(dataObj) || dataObj == undefined) {
@@ -582,6 +596,7 @@ class ChartVisualization {
             if (document.querySelector(options.targetBlocChart).querySelector('.no-data')) {
                 document.querySelector(options.targetBlocChart).querySelector('.no-data').style.display = "none"
             }
+            showChildrenFromElAlt(document.querySelector(options.targetBlocChart))
             return dataObj
         }
     }
@@ -779,12 +794,14 @@ class ChartVisualization {
                     if (chart.data.datasets.length > 1) {
                         if (options.data.backgroundColor.length === 0) {
                             chart.data.datasets[i].backgroundColor = "rgba(255, 255, 255, 0)"
+                            chart.data.datasets[i].fill = true
                         }
                         else {
                             chart.data.datasets[i].backgroundColor = options.data.backgroundColor[i]
 
                         }
                         chart.data.datasets[i].borderColor = options.data.borderColor[i]
+                        chart.data.datasets[i].fill = true
                     }
                     else {
                         // s'il n'y a qu'un seul dataset
@@ -792,6 +809,7 @@ class ChartVisualization {
                             // si arrayBackgroundColors est vide on affecte une valeur transparente
                             chart.data.datasets[i].backgroundColor = "rgba(255, 255, 255, 0)"
                             chart.data.datasets[i].borderColor = options.data.borderColor
+                            chart.data.datasets[i].fill = true
                         }
                         else if (options.data.backgroundColor.length === 1) {
                             if (chart.config.type === 'bar' || chart.config.type === 'horizontalBar') {
@@ -806,11 +824,13 @@ class ChartVisualization {
                                 chart.data.datasets[i].backgroundColor = options.data.backgroundColor
                                 chart.data.datasets[i].borderColor = options.data.borderColor
                             }
+                            chart.data.datasets[i].fill = true
                         }
                         else {
                             // sinon on affecte les listes
                             chart.data.datasets[i].backgroundColor = options.data.backgroundColor
                             chart.data.datasets[i].borderColor = options.data.borderColor
+                            chart.data.datasets[i].fill = true
                         }
                     }
                 } else {
@@ -913,20 +933,18 @@ class ChartVisualization {
             if (!document.querySelector(options.targetBlocChart).querySelector('.chart-filter')) {
                 document.querySelector(options.targetBlocChart).querySelector('.footer-chart').insertAdjacentHTML('beforeend', '<div class="chart-filter mb-4"><div class="alias">' + options.chart.filter.alias + '</div><select class="form-control select-filter mt-3" data-live-search="true"><option value="">' + options.chart.filter.alias + '</option></select></div>')
             }
-            let uniqueVal = []
             const colName = String(options.chart.filter.col)
             const filterSelectEl = document.querySelector(options.targetBlocChart + ' .select-filter')
 
             return fetch(`${options.data.sourceUrl}?${objToQueryString(options.data.params)}`)
                 .then(response => response.json())
                 .then(data => {
-                    const dataChecked = this.dataSourceOperations(data)
+                    const dataChecked = this.dataSource(data) // Récupération du jeu des données avant filtre
                     if (dataChecked) {
-                        uniqueVal = dataChecked
+                        const uniqueVal = dataChecked
                             .map(p => p[colName])
                             .filter((col, index, arr) => arr.indexOf(col) === index)
                             .sort((a, b) => b - a)
-
                         $(options.targetBlocChart + ' .select-filter').selectpicker('destroy')
                         while (filterSelectEl.firstChild) filterSelectEl.removeChild(filterSelectEl.firstChild)
                         uniqueVal.forEach((item) => {
@@ -938,14 +956,14 @@ class ChartVisualization {
                         document.querySelector(options.targetBlocChart + ' .select-filter select').addEventListener('change', () => {
                             chart.data.labels.length = 0
                             chart.data.datasets.length = 0
-                            const currentFilters = options.data.customFilters // filtres actifs au démarrage
-                            for (const [key] of Object.entries(options.data.customFilters)) {
-                                // si une des colonnes de filtre est égale à la colonne de filtre de filterChartData, on l'enlève
-                                if (key === colName) {
-                                    delete currentFilters[key]
-                                }
-                            }
-                            const filteredData = multipleFiltersData(dataChecked, { [colName]: String(document.querySelector(options.targetBlocChart + ' .select-filter select').value), ...currentFilters })
+                            const currentFilters = options.data.customFilters // Filtres actifs au démarrage
+                            // Check if the filter column is not already in customFilters object
+                            const filtersCleaned = Object.fromEntries(
+                                Object.entries(currentFilters).filter(
+                                    ([key, val]) => ![colName].includes(key)
+                                )
+                            )
+                            const filteredData = multipleFiltersData(dataChecked, { [colName]: String(document.querySelector(options.targetBlocChart + ' .select-filter select').value), ...filtersCleaned })
                             return this.buildChartDatasets(filteredData)
                         })
                     }
@@ -1073,8 +1091,11 @@ class ChartVisualization {
             document.querySelector(options.targetBlocChart).querySelector(options.chart.downloadButtonTarget).addEventListener('click', () => {
                 saveFileXlsx(data)
             })
-            if (document.querySelector(options.targetBlocChart).querySelector('.full-screen')) {
-                document.querySelector(options.targetBlocChart).querySelector('.full-screen').remove()
+            const elFullScreen = document.querySelector(options.targetBlocChart).querySelectorAll('.full-screen')
+            if (elFullScreen.length) {
+                elFullScreen.forEach(e => {
+                    e.remove()
+                })
             }
             fetch('/icons/full-size.svg')
                 .then(resp => {
@@ -1243,6 +1264,26 @@ const createChartAnalysis = (options, data) => {
     }
 }
 
+const updateChart = (chartClass) => {
+    if (chartClass.options.data.sourceUrl) {
+        return fetch(`${chartClass.options.data.sourceUrl}?${objToQueryString(chartClass.options.data.params)}`)
+            .then(response => response.json())
+            .then(data => {
+                const dataChecked = chartClass.dataSourceOperations(data)
+                if (dataChecked) {
+                    return chartClass.buildChart(dataChecked), chartClass.addChartComponents(dataChecked)
+                } else {
+                    console.log(chartClass.options.chart.title.text + ' (' + chartClass.options.data.sourceUrl + ') : données non disponibles')
+                }
+            })
+            .catch((e) => {
+                console.log(e)
+            })
+    } else {
+        console.log(chartClass.options.chart.title.text + ' (' + chartClass.options.data.sourceUrl + ') : données non disponibles')
+    }
+}
+
 /**
  * @desc Paramètres globaux des graphiques
  * 
@@ -1258,4 +1299,4 @@ const chartGlobalParams = () => {
     return Chart
 }
 
-export { globalCharts, chartOptionsChecker, ChartVisualization, chartGlobalParams, createChartAnalysis }
+export { globalCharts, chartOptionsChecker, ChartVisualization, chartGlobalParams, createChartAnalysis, updateChart }

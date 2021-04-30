@@ -187,4 +187,17 @@ const showChildrenFromEl = (el) => {
     }
 }
 
-export { goToElement, scrollToTop, bootstrapToolsActivate, getUrlParameter, getAllUrlParameters, waitForEl, fullScreen, isHidden, hideChildrenFromEl, showChildrenFromEl }
+/**
+ * @desc Afficher les enfants d'un élément
+ *
+ */
+const showChildrenFromElAlt = (el) => {
+    if (el.childNodes[0]) {
+        const subEl = el.childNodes[0].childNodes
+        subEl.forEach((sub) => {
+            sub.style.display = ''
+        })
+    }
+}
+
+export { goToElement, scrollToTop, bootstrapToolsActivate, getUrlParameter, getAllUrlParameters, waitForEl, fullScreen, isHidden, hideChildrenFromEl, showChildrenFromEl, showChildrenFromElAlt }

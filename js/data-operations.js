@@ -247,4 +247,21 @@ const objToQueryString = (obj) => {
     return keyValuePairs.join('&')
 }
 
-export { sortBy, groupBy, groupBySum, multipleGroupBySum, roundDec, getMax, getMin, multipleFiltersData, isInArray, isEmpty, isObject, objToQueryString }
+const extractBrackets = (params, objRes) => {
+    /* For example, if:
+    params = { param1: "{test}"", param2: "58" }
+    objRes = { test: "Youhou", test1: "Toto", config: [...] }
+    It will return:
+    params = { param1: "Youhou", param2: "58" } */
+    if (params.constructor.name === 'Object' && objRes.constructor.name === 'Object') {
+        Object.keys(params).forEach(key => {
+            if (params[key] != null && params[key].slice(0, 1) === '{' && params[key].slice(-1) === '}') {
+                return params[key] = objRes[params[key].slice(1, -1)]
+            } else {
+                return params[key]
+            }
+        })
+    }
+}
+
+export { sortBy, groupBy, groupBySum, multipleGroupBySum, roundDec, getMax, getMin, multipleFiltersData, isInArray, isEmpty, isObject, objToQueryString, extractBrackets }
