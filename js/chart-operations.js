@@ -1091,21 +1091,6 @@ class ChartVisualization {
             document.querySelector(options.targetBlocChart).querySelector(options.chart.downloadButtonTarget).addEventListener('click', () => {
                 saveFileXlsx(data)
             })
-            const elFullScreen = document.querySelector(options.targetBlocChart).querySelectorAll('.full-screen')
-            if (elFullScreen.length) {
-                elFullScreen.forEach(e => {
-                    e.remove()
-                })
-            }
-            fetch('/icons/full-size.svg')
-                .then(resp => {
-                    document.querySelector(options.targetBlocChart).querySelector(options.chart.downloadButtonTarget).parentElement.insertAdjacentHTML('beforeend', '<button class="btn btn-light control-data full-screen" title="Agrandir"><img class="icons-control-stat print-icon" src="' + resp.url + '" alt="Plein écran"></button>')
-                    fullScreen('.full-screen', options.targetBlocChart)
-                })
-                .catch(() => {
-                    document.querySelector(options.targetBlocChart).querySelector(options.chart.downloadButtonTarget).parentElement.insertAdjacentHTML('beforeend', '<button class="btn btn-light control-data full-screen" title="Agrandir"><i class="fas fa-arrows-alt icons-control-stat" style="color: #9f9f9f;"></i></button>')
-                    fullScreen('.full-screen', options.targetBlocChart)
-                })
         }
         if (options.chart.printButtonTarget) {
             const el = document.querySelector(options.targetBlocChart).querySelector(options.chart.printButtonTarget)
@@ -1170,6 +1155,26 @@ class ChartVisualization {
             .catch(() => {
                 console.log('icons/share.svg n\'existe pas')
                 shareComponent('<i class="fas fa-code icons-control-stat" style="color: #9f9f9f;"></i>')
+            })
+        const fullSizeComponent = function (iconHtml) {
+            if (document.querySelector(options.targetBlocChart).querySelector('.full-screen')) {
+                document.querySelector(options.targetBlocChart).querySelector('.full-screen').remove()
+            }
+            if ((options.chart.downloadButtonTarget)) {
+                if (document.querySelector(options.targetBlocChart).querySelector(options.chart.downloadButtonTarget)) {
+                    document.querySelector(options.targetBlocChart).querySelector(options.chart.downloadButtonTarget).parentElement.insertAdjacentHTML('beforeend', '<button class="btn btn-light control-data full-screen" title="Agrandir">' + iconHtml + '</button>')    
+                }
+            }
+        }
+        fetch('/icons/full-size.svg')
+            .then(resp => {
+                fullSizeComponent('<img class="icons-control-stat print-icon" src="' + resp.url + '" alt="Plein écran">')
+                fullScreen('.full-screen', options.targetBlocChart)
+            })
+            .catch(() => {
+                console.log('icons/share.svg n\'existe pas')
+                fullSizeComponent('<i class="fas fa-arrows-alt icons-control-stat" style="color: #9f9f9f;"></i>')
+                fullScreen('.full-screen', options.targetBlocChart)
             })
     }
 

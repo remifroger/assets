@@ -897,7 +897,7 @@ const setCartoAnalyzesSelector = function (options, layers) {
                     // "communes_geo_centroid" is a "point" layer, "communes_geo" add a polygon overlay for a better lisibility
                     if (layerToDisplay[0].get('name') === 'communes_geo_centroid') {
                         globalAnalyzes.forEach(function (o) {
-                            if (o.options.title === "Contours") {
+                            if (o.options.title === "Contours" || o.options.title === "Limites communales") {
                                 layers.forEach(function (l) {
                                     if (l.get('name') === 'communes_geo') {
                                         l.setStyle(o.apply())
