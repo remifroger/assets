@@ -168,10 +168,13 @@ const isHidden = (el) => {
  *
  */
 const hideChildrenFromEl = (el) => {
-    if (el.childNodes[0]) {
-        const subEl = el.childNodes[0].childNodes
-        subEl.forEach((sub) => {
-            sub.style.display = 'none'
+    if (el.childNodes.length) {
+        el.childNodes.forEach((subEl) => {
+            if (subEl.childNodes.length) {
+                subEl.childNodes.forEach((sub) => {
+                    sub.style.display = 'none'
+                })
+            }
         })
     }
 }

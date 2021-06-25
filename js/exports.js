@@ -3,7 +3,8 @@
 import domtoimage from 'dom-to-image'
 import 'blueimp-canvas-to-blob'
 import alasql from 'alasql'
-import saveAs from 'file-saver'
+import  * as FileSaver from 'file-saver'
+import XLSX from 'xlsx'
 import { hideChildrenFromEl, showChildrenFromEl } from './navigation.js'
 
 /**
@@ -36,7 +37,7 @@ const saveFileXlsx = (data) => {
  * @returns {Promise} Retourne une promesse
  */
 const printDomElement = (target, template) => {
-    if ('undefined' !== typeof window.jQuery) {
+    if (window.jQuery) {
         document.querySelectorAll(target).forEach((item) => {
             if (document.getElementById('loading-modal')) {
                 $("#loading-modal").modal({
@@ -70,7 +71,7 @@ const printDomElement = (target, template) => {
             }
             domtoimage.toBlob(item)
                 .then(function (blob) {
-                    window.saveAs(blob, 'print-' + target + '.png')
+                    FileSaver.saveAs(blob, 'print-' + target + '.png')
                     $("#loading-modal").modal('hide')
                     if (item.querySelector('.print-infos')) item.querySelector('.print-infos').style.display = "none"
                     if (item.querySelector('.legend-print-content')) item.querySelector('.legend-print-content').style.display = "none"
@@ -82,6 +83,7 @@ const printDomElement = (target, template) => {
                 })
         })
     } else {
+        console.log(window.jQuery)
         console.log("jQuery est requis pour l'impression")
     }
 }

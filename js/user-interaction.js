@@ -86,7 +86,8 @@ const listeTerritoires = (target, urlAccess, urlTerritoires) => {
                         return
                     }
                 })
-                .catch(() => {
+                .catch((e) => {
+                    console.log(e)
                     spinner.forEach(e => e.style.display = "none")
                     document.querySelector(target).insertAdjacentHTML('beforeend', '<div class="alert alert-danger no-data mt-3" role="alert">Erreur interne</div>')
                     console.log(target + ' : erreur interne')

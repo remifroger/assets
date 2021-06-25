@@ -57,6 +57,7 @@ const mapOptionsChecker = (options) => {
             if (isObject(obj[key]) && key !== 'options' && key !== 'qualitatifObj' && key !== 'customFilters' && key !== 'params') {
                 result = result.concat(getkeys(obj[key], prefix + key))
             } else {
+                prefix = prefix === '0.' ? '' : prefix
                 result.push(prefix + key)
             }
             return result
@@ -856,8 +857,7 @@ class MapAnalysis {
             .then(resp => {
                 shareComponent('<img class="icons-control-stat share-icon" src="' + resp.url + '" alt="Partager">')
             })
-            .catch(() => {
-                console.log('icons/share.svg n\'existe pas')
+            .catch((e) => {
                 shareComponent('<i class="fas fa-code icons-control-stat" style="color: #9f9f9f;"></i>')
             })
     }

@@ -1,10 +1,36 @@
 'use strict';
 
-import { Chart, registerables } from 'chart.js'
+//import { Chart, registerables } from 'chart.js'
+import {
+    Chart,
+    ArcElement,
+    LineElement,
+    BarElement,
+    PointElement,
+    BarController,
+    BubbleController,
+    DoughnutController,
+    LineController,
+    PieController,
+    PolarAreaController,
+    RadarController,
+    ScatterController,
+    CategoryScale,
+    LinearScale,
+    LogarithmicScale,
+    RadialLinearScale,
+    TimeScale,
+    TimeSeriesScale,
+    Decimation,
+    Filler,
+    Legend,
+    Title,
+    Tooltip
+} from 'chart.js'
 import ChartDataLabels from 'chartjs-plugin-datalabels'
-import { TreemapController, TreemapElement } from 'chartjs-chart-treemap'
-import { SankeyController, Flow } from "chartjs-chart-sankey"
-import { MatrixController, MatrixElement } from "chartjs-chart-matrix"
+import * as Treemap from 'chartjs-chart-treemap'
+import * as Sankey from "chartjs-chart-sankey"
+import * as Matrix from "chartjs-chart-matrix"
 import { multipleFiltersData, isEmpty, isObject, groupBy, roundDec, objToQueryString, multipleGroupBySum } from './data-operations.js'
 import { fullScreen, isHidden, hideChildrenFromEl, showChildrenFromElAlt } from './navigation.js'
 import { printDomElement, saveFileXlsx } from './exports.js'
@@ -12,7 +38,34 @@ import { listeTerritoires } from './user-interaction.js'
 import { chartOpts } from './chart-options.js'
 import Tablesort from 'tablesort'
 
-Chart.register(...registerables, TreemapController, TreemapElement, SankeyController, Flow, MatrixController, MatrixElement)
+Chart.register(
+    ArcElement,
+    LineElement,
+    BarElement,
+    PointElement,
+    BarController,
+    BubbleController,
+    DoughnutController,
+    LineController,
+    PieController,
+    PolarAreaController,
+    RadarController,
+    ScatterController,
+    CategoryScale,
+    LinearScale,
+    LogarithmicScale,
+    RadialLinearScale,
+    TimeScale,
+    TimeSeriesScale,
+    Decimation,
+    Filler,
+    Legend,
+    Title,
+    Tooltip,
+    Treemap,
+    Sankey,
+    Matrix
+)
 
 /**
  * @desc Vérifie la validité des options configurées pour générer un graphique
@@ -1162,7 +1215,7 @@ class ChartVisualization {
             }
             if ((options.chart.downloadButtonTarget)) {
                 if (document.querySelector(options.targetBlocChart).querySelector(options.chart.downloadButtonTarget)) {
-                    document.querySelector(options.targetBlocChart).querySelector(options.chart.downloadButtonTarget).parentElement.insertAdjacentHTML('beforeend', '<button class="btn btn-light control-data full-screen" title="Agrandir">' + iconHtml + '</button>')    
+                    document.querySelector(options.targetBlocChart).querySelector(options.chart.downloadButtonTarget).parentElement.insertAdjacentHTML('beforeend', '<button class="btn btn-light control-data full-screen" title="Agrandir">' + iconHtml + '</button>')
                 }
             }
         }

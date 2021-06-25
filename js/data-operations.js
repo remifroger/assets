@@ -189,10 +189,12 @@ const multipleFiltersData = (data, filters) => {
                     }
                 })
             }
-            if (!customFilters.length) {
-                return (filters[eachKey].toString()).includes((eachObj[eachKey].toString()))
-            } else {
-                return (customFilters.toString()).includes((eachObj[eachKey].toString()))
+            if (eachObj[eachKey] !== undefined) {
+                if (!customFilters.length) {
+                    return (filters[eachKey].toString()).includes((eachObj[eachKey].toString()))
+                } else {
+                    return (customFilters.toString()).includes((eachObj[eachKey].toString()))
+                }
             }
         })
     })
@@ -249,7 +251,7 @@ const objToQueryString = (obj) => {
 
 const extractBrackets = (params, objRes) => {
     /* For example, if:
-    params = { param1: "{test}"", param2: "58" }
+    params = { param1: "{test}", param2: "58" }
     objRes = { test: "Youhou", test1: "Toto", config: [...] }
     It will return:
     params = { param1: "Youhou", param2: "58" } */
