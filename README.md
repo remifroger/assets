@@ -74,6 +74,8 @@ npm run start
 
 *En cours d'amélioration*
 
+Les tests sont basés sur Mocha et situés dans `js/tests`
+
 ```
 cd C:/apps/my-app
 npm run test
