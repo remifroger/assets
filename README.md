@@ -70,6 +70,13 @@ npm install
 npm run start
 ```
 
+## Tests
+
+```
+cd C:/apps/my-app
+npm run test
+```
+
 ## Documentation
 
 Une documentation est générée automatiquement à partir du package [ESDoc](https://esdoc.org/)
