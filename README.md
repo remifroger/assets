@@ -72,6 +72,8 @@ npm run start
 
 ## Tests
 
+*En cours d'amélioration*
+
 ```
 cd C:/apps/my-app
 npm run test
