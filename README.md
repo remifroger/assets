@@ -11,6 +11,16 @@ cd C:/apps/local-modules/assets-dataudiar
 npm install
 ```
 
+### Installation d'un hook pre-commit pour lancer les tests avant validation
+
+Dans le cas où vous avez cloné ce projet ([voir ici](http://srv-gitlab.audiar.net/rfroger/global-documentation/blob/master/git_commands.md#apporter-des-modifications-sur-un-projet-existant-clone-et-travaille-sur-une-branche-de-d%C3%A9veloppement)) ou initialisé le projet avec Git ([voir ici](http://srv-gitlab.audiar.net/rfroger/global-documentation/blob/master/git_commands.md#initialiser-un-r%C3%A9pertoire-local-sur-gitlab)), le script create-git-hooks.sh va créer/modifier un hook pre-commit (dans notre cas, ici : C:/apps/local-modules/assets-dataudiar/.git/hooks) qui fera tourner les tests avant chaque commit
+
+Pour créer automatiquement ce hook, exécutez :
+
+```
+bash create-git-hooks.sh
+```
+
 ## Utilisation du package
 
 Comment utiliser les fonctionnalités du package dans une application
@@ -72,9 +82,7 @@ npm run start
 
 ## Tests
 
-*En cours d'amélioration*
-
-Les tests sont basés sur Mocha et situés dans `js/tests`
+Tests : `js/tests`
 
 ```
 cd C:/apps/my-app
