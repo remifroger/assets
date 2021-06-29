@@ -1021,7 +1021,6 @@ class ChartVisualization {
                         })
                     }
                 })
-                .catch(e => console.log(e))
         } else {
             console.log("jQuery est requis pour la fonctionnalité de filtre d'un graphique")
             return
@@ -1039,8 +1038,8 @@ class ChartVisualization {
         const target = this.options.targetBlocChart
         const chartConfig = this.options.chart
         const dataConfig = this.options.data
-        const urlAppConfig = '/api/appConfig'
-        const urlApiTerritoires = '/api/territoires'
+        const urlAppConfig = `/api/appConfig`
+        const urlApiTerritoires = `/api/territoires`
 
         document.querySelector(target).querySelector('.footer-chart').insertAdjacentHTML('beforeend', '<button class="classic-button collapsed rect" type="button" data-toggle="collapse" data-target="#compare-' + chartConfig.name + '" aria-expanded="false" aria-controls="compare-' + chartConfig.name + '"><i class="fas fa-search mr-2"></i>Comparer</button>')
         document.querySelector(target).querySelector('.footer-chart').insertAdjacentHTML('beforeend', '<div class="collapse form mt-3" id="compare-' + chartConfig.name + '"><div class="alert alert-danger compare-max mb-3" role="alert" style="display: none; margin-bottom: auto;"></div><div class="form-territoire no-alert"></div></div>')
@@ -1206,7 +1205,6 @@ class ChartVisualization {
                 shareComponent('<img class="icons-control-stat share-icon" src="' + resp.url + '" alt="Partager">')
             })
             .catch(() => {
-                console.log('icons/share.svg n\'existe pas')
                 shareComponent('<i class="fas fa-code icons-control-stat" style="color: #9f9f9f;"></i>')
             })
         const fullSizeComponent = function (iconHtml) {
@@ -1225,7 +1223,6 @@ class ChartVisualization {
                 fullScreen('.full-screen', options.targetBlocChart)
             })
             .catch(() => {
-                console.log('icons/share.svg n\'existe pas')
                 fullSizeComponent('<i class="fas fa-arrows-alt icons-control-stat" style="color: #9f9f9f;"></i>')
                 fullScreen('.full-screen', options.targetBlocChart)
             })
